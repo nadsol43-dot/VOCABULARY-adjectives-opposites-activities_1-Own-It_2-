@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opposites Master Deck - Full Set</title>
+<style>
+  :root {
+    --bg: #f8fafc; --card: #ffffff; --primary: #3b82f6; 
+    --success: #10b981; --danger: #ef4444; --text: #1e293b;
+    --radius: 16px; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+  
+  h1 { font-size: 2.2rem; margin-bottom: 5px; text-align: center; color: #1e40af; }
+  .subtitle { text-align: center; margin-bottom: 20px; color: #64748b; font-size: 0.95rem; }
+
+  /* NAVIGATION */
+  .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  .tab-btn {
+    padding: 10px 18px; border: none; background: white; border-radius: 30px;
+    cursor: pointer; font-weight: 600; font-size: 0.9rem; box-shadow: var(--shadow);
+    transition: all 0.2s; color: #64748b; border: 2px solid transparent;
+  }
+  .tab-btn:hover { transform: translateY(-2px); border-color: var(--primary); }
+  .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+  /* CONTAINER */
+  .activity-container {
+    width: 100%; max-width: 850px; background: var(--card);
+    border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow);
+    min-height: 450px; position: relative; display: none;
+  }
+  .activity-container.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* FLASHCARDS */
+  .flashcard-area { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .flashcard { width: 280px; height: 380px; perspective: 1000px; cursor: pointer; }
+  .flashcard-inner {
+    position: relative; width: 100%; height: 100%; text-align: center;
+    transition: transform 0.6s; transform-style: preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .fc-front, .fc-back {
+    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+    border-radius: var(--radius); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold;
+    box-shadow: var(--shadow); border: 4px solid #e2e8f0;
+  }
+  .fc-front { background: linear-gradient(135deg, #fff 0%, #f1f5f9 100%); color: var(--primary); }
+  .fc-back { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: var(--success); transform: rotateY(180deg); }
+  .fc-emoji { font-size: 4.5rem; margin-bottom: 15px; }
+  .fc-controls { display: flex; gap: 12px; }
+  .btn {
+    padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
+    font-weight: bold; font-size: 0.95rem; transition: 0.2s;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn:hover { opacity: 0.9; transform: scale(1.05); }
+
+  /* QUIZ */
+  .quiz-item {
+    background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 10px;
+    border-left: 5px solid var(--primary); display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  .quiz-input {
+    padding: 8px 12px; border: 2px solid #cbd5e1; border-radius: 8px;
+    font-size: 1rem; width: 130px; font-family: inherit;
+  }
+  .quiz-input.correct { border-color: var(--success); background: #d1fae5; }
+  .quiz-input.wrong { border-color: var(--danger); background: #fee2e2; }
+
+  /* MATCHING */
+  .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+  .match-col { display: flex; flex-direction: column; gap: 8px; }
+  .match-btn {
+    padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; background: white;
+    cursor: pointer; font-size: 1rem; font-weight: 600; transition: 0.2s; text-align: center;
+  }
+  .match-btn.selected { border-color: var(--primary); background: #eff6ff; }
+  .match-btn.matched { border-color: var(--success); background: #d1fae5; opacity: 0.5; pointer-events: none; }
+  .match-btn.shake { animation: shake 0.4s; border-color: var(--danger); background: #fee2e2; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+  /* SPEED SORT */
+  .sort-game { text-align: center; }
+  .sort-word { font-size: 2.8rem; font-weight: bold; margin: 25px 0; color: var(--primary); min-height: 70px; }
+  .sort-bins { display: flex; justify-content: space-around; gap: 15px; }
+  .bin {
+    flex: 1; padding: 25px 10px; border: 3px dashed #cbd5e1; border-radius: var(--radius);
+    cursor: pointer; transition: 0.2s; font-size: 1.3rem; font-weight: bold;
+  }
+  .bin:hover { background: #f1f5f9; border-color: var(--primary); }
+  .timer-bar { height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
+  .timer-fill { height: 100%; background: var(--primary); width: 100%; transition: width 3s linear; }
+
+  /* SENTENCE BUILDER */
+  .sentence-game { text-align: center; }
+  .sentence-prompt { font-size: 1.4rem; margin-bottom: 20px; line-height: 1.8; }
+  .blank {
+    display: inline-block; min-width: 90px; border-bottom: 3px solid var(--primary);
+    margin: 0 5px; color: var(--primary); font-weight: bold; cursor: default; padding: 0 8px;
+  }
+  .options-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .option-chip {
+    padding: 10px 18px; background: white; border: 2px solid #e2e8f0; border-radius: 20px;
+    cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 0.95rem;
+  }
+  .option-chip:hover:not(.used) { border-color: var(--primary); background: #eff6ff; }
+  .option-chip.used { opacity: 0.3; pointer-events: none; text-decoration: line-through; }
+
+  /* FEEDBACK OVERLAY */
+  .feedback-msg {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: white; padding: 25px 40px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+    font-size: 1.8rem; font-weight: bold; z-index: 100; display: none; text-align: center;
+  }
+  .feedback-msg.show { display: block; animation: popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes popIn { from{transform:translate(-50%,-50%) scale(0.5);opacity:0} to{transform:translate(-50%,-50%) scale(1);opacity:1} }
+
+  @media(max-width:600px) {
+    .match-grid { grid-template-columns: 1fr; }
+    .flashcard { width: 240px; height: 320px; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🌈 Opposites Master Deck</h1>
+<p class="subtitle">Full Set: 26 Pairs • 5 Interactive Activities</p>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+  <button class="tab-btn" onclick="switchTab('quiz')">📝 Quiz</button>
+  <button class="tab-btn" onclick="switchTab('matching')">🧩 Matching</button>
+  <button class="tab-btn" onclick="switchTab('speedsort')">⚡ Speed Sort</button>
+  <button class="tab-btn" onclick="switchTab('sentences')">💬 Sentences</button>
+</div>
+
+<div id="feedback" class="feedback-msg"></div>
+
+<!-- 1. FLASHCARDS -->
+<div id="flashcards" class="activity-container active">
+  <div class="flashcard-area">
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-inner">
+        <div class="fc-front">
+          <div class="fc-emoji" id="fc-emoji">🐘</div>
+          <div id="fc-word">BIG</div>
+          <div style="font-size:0.85rem;color:#94a3b8;margin-top:8px">(Tap to flip)</div>
+        </div>
+        <div class="fc-back">
+          <div class="fc-emoji" id="fc-emoji-back">🐭</div>
+          <div id="fc-opposite">SMALL</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="btn btn-secondary" onclick="prevCard()">← Prev</button>
+      <button class="btn btn-primary" onclick="nextCard()">Next →</button>
+    </div>
+    <div style="margin-top:8px;color:#64748b;font-size:0.9rem">Card <span id="fc-current">1</span> / <span id="fc-total">26</span></div>
+  </div>
+</div>
+
+<!-- 2. QUIZ -->
+<div id="quiz" class="activity-container">
+  <h2 style="text-align:center;margin-bottom:15px">Type the Opposite</h2>
+  <div id="quiz-list"></div>
+  <div style="text-align:center;margin-top:20px">
+    <button class="btn btn-primary" onclick="checkQuiz()">Check Answers</button>
+    <button class="btn btn-secondary" onclick="initQuiz()">New Random Set</button>
+  </div>
+  <div id="quiz-score" style="text-align:center;margin-top:12px;font-weight:bold;font-size:1.1rem"></div>
+</div>
+
+<!-- 3. MATCHING -->
+<div id="matching" class="activity-container">
+  <h2 style="text-align:center;margin-bottom:8px">Match the Pairs</h2>
+  <div id="match-status" style="text-align:center;color:#64748b;margin-bottom:10px;font-size:0.95rem">Select a word on the left, then its opposite on the right.</div>
+  <div class="match-grid">
+    <div class="match-col" id="match-left"></div>
+    <div class="match-col" id="match-right"></div>
+  </div>
+  <div style="text-align:center;margin-top:20px">
+    <button class="btn btn-secondary" onclick="initMatching()">Shuffle & Reset</button>
+  </div>
+</div>
+
+<!-- 4. SPEED SORT -->
+<div id="speedsort" class="activity-container">
+  <h2 style="text-align:center">⚡ Speed Sort</h2>
+  <p style="text-align:center;color:#64748b;margin-bottom:8px;font-size:0.95rem">Is it an OPPOSITE or a SYNONYM? Decide before time runs out!</p>
+  <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+  <div class="sort-game">
+    <div class="sort-word" id="sort-word">HOT</div>
+    <div class="sort-bins">
+      <div class="bin" onclick="handleSort('opposite')">OPPOSITE<br><small style="font-weight:normal;font-size:0.85rem">(e.g., Cold)</small></div>
+      <div class="bin" onclick="handleSort('synonym')">SYNONYM<br><small style="font-weight:normal;font-size:0.85rem">(e.g., Warm)</small></div>
+    </div>
+    <div style="text-align:center;margin-top:18px;font-size:1.3rem;font-weight:bold">Score: <span id="sort-score">0</span></div>
+    <button class="btn btn-primary" style="margin-top:15px" onclick="initSpeedSort()">Start Game</button>
+  </div>
+</div>
+
+<!-- 5. SENTENCE BUILDER -->
+<div id="sentences" class="activity-container">
+  <h2 style="text-align:center">💬 Sentence Builder</h2>
+  <p style="text-align:center;color:#64748b;margin-bottom:18px;font-size:0.95rem">Choose the correct opposite to complete each sentence.</p>
+  <div class="sentence-game">
+    <div class="sentence-prompt" id="sentence-display"></div>
+    <div class="options-row" id="sentence-options"></div>
+    <div style="text-align:center;margin-top:18px">
+      <button class="btn btn-secondary" onclick="initSentences()">Next Sentence</button>
+    </div>
+    <div id="sentence-feedback" style="text-align:center;margin-top:12px;font-weight:bold;min-height:24px;font-size:1rem"></div>
+  </div>
+</div>
+
+<script>
+// ================= COMPLETE DATA: ALL 26 PAIRS =================
+const PAIRS = [
+  {a:"Big", b:"Small", emoji:"🐘↔🐭"},
+  {a:"Large", b:"Little", emoji:"🐘↔🐭"},
+  {a:"Tall", b:"Short", emoji:"🦒↔🐧"},
+  {a:"Long", b:"Short", emoji:"🐍↔🪱"},
+  {a:"Heavy", b:"Light", emoji:"🏋️↔🪶"},
+  {a:"Hot", b:"Cold", emoji:"☕↔⛄"},
+  {a:"Wet", b:"Dry", emoji:"🌧️↔🌵"},
+  {a:"Clean", b:"Dirty", emoji:"✨↔🪰"},
+  {a:"Full", b:"Empty", emoji:"🥤↔🫙"},
+  {a:"Open", b:"Closed", emoji:"🚪↔🔒"},
+  {a:"Fast", b:"Slow", emoji:"🐆↔🐢"},
+  {a:"Happy", b:"Sad", emoji:"😄↔😢"},
+  {a:"Up", b:"Down", emoji:"🎈↔🍎"},
+  {a:"Quiet", b:"Loud", emoji:"🦊💤↔🥁"},
+  {a:"Day", b:"Night", emoji:"☀️↔🌙"},
+  {a:"Above", b:"Below", emoji:"🐦↔🐟"},
+  {a:"Near", b:"Far", emoji:"🏠↔🏔️"},
+  {a:"Hard", b:"Soft", emoji:"🪨↔🛋️"},
+  {a:"Thick", b:"Thin", emoji:"📗↔📘"},
+  {a:"Wide", b:"Narrow", emoji:"🛋️↔🪑"},
+  {a:"Push", b:"Pull", emoji:"📦↔🪢"},
+  {a:"Give", b:"Take", emoji:"🎁↔🤲"},
+  {a:"Come", b:"Go", emoji:"🏃↔🚶"},
+  {a:"Sit", b:"Stand", emoji:"🪑↔🧍"},
+  {a:"Cool", b:"Hot", emoji:"❄️↔🔥"},
+  {a:"Old", b:"New", emoji:"👟🩹↔👟✨"}
+];
+
+const SYNONYMS = [
+  {word:"Warm", pair:"Hot"}, {word:"Tiny", pair:"Small"}, {word:"Quick", pair:"Fast"},
+  {word:"Joyful", pair:"Happy"}, {word:"Heavy", pair:"Heavy"}, {word:"Full", pair:"Full"},
+  {word:"Huge", pair:"Big"}, {word:"Brief", pair:"Short"}, {word:"Noisy", pair:"Loud"}
+];
+
+const SENTENCES = [
+  {text:"The elephant is ___, but the mouse is small.", answer:"big", options:["big","tall","hot"]},
+  {text:"Summer is hot, but winter is ___.", answer:"cold", options:["cold","wet","fast"]},
+  {text:"The turtle is slow, but the cheetah is ___.", answer:"fast", options:["slow","happy","full"]},
+  {text:"Please ___ the door, don't close it.", answer:"open", options:["open","push","give"]},
+  {text:"My glass is full of juice, yours is ___.", answer:"empty", options:["empty","clean","light"]},
+  {text:"The sun shines during the ___, stars come out at night.", answer:"day", options:["day","up","hot"]},
+  {text:"The book is thick, but the paper is ___.", answer:"thin", options:["thin","short","narrow"]},
+  {text:"The sofa is wide, but the chair is ___.", answer:"narrow", options:["narrow","small","light"]},
+  {text:"The bird flies above the tree, the fish swims ___.", answer:"below", options:["below","near","down"]},
+  {text:"My house is near the school, the park is ___.", answer:"far", options:["far","old","hard"]},
+  {text:"The rock is hard, but the pillow is ___.", answer:"soft", options:["soft","light","cool"]},
+  {text:"She will ___ to the store, not stay here.", answer:"go", options:["go","come","give"]},
+  {text:"Please ___ down on the chair.", answer:"sit", options:["sit","stand","push"]},
+  {text:"This jacket is old, I need a ___ one.", answer:"new", options:["new","big","clean"]},
+  {text:"The room was quiet, then it became very ___.", answer:"loud", options:["loud","happy","fast"]}
+];
+
+// ================= UTILS =================
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+function showFeedback(msg, isGood) {
+  const el = document.getElementById('feedback');
+  el.textContent = msg;
+  el.style.color = isGood ? '#10b981' : '#ef4444';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1200);
+}
+
+// ================= TABS =================
+function switchTab(id) {
+  document.querySelectorAll('.activity-container').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  if(id === 'quiz') initQuiz();
+  if(id === 'matching') initMatching();
+  if(id === 'speedsort') initSpeedSort();
+  if(id === 'sentences') initSentences();
+}
+
+// ================= 1. FLASHCARDS =================
+let fcIndex = 0;
+function updateFC() {
+  const p = PAIRS[fcIndex];
+  document.getElementById('fc-word').textContent = p.a.toUpperCase();
+  document.getElementById('fc-opposite').textContent = p.b.toUpperCase();
+  document.getElementById('fc-emoji').textContent = p.emoji.split('↔')[0];
+  document.getElementById('fc-emoji-back').textContent = p.emoji.split('↔')[1];
+  document.getElementById('fc-current').textContent = fcIndex + 1;
+  document.getElementById('fc-total').textContent = PAIRS.length;
+  document.querySelector('.flashcard').classList.remove('flipped');
+}
+function nextCard() { fcIndex = (fcIndex + 1) % PAIRS.length; updateFC(); }
+function prevCard() { fcIndex = (fcIndex - 1 + PAIRS.length) % PAIRS.length; updateFC(); }
+updateFC();
+
+// ================= 2. QUIZ =================
+function initQuiz() {
+  const list = document.getElementById('quiz-list');
+  list.innerHTML = '';
+  document.getElementById('quiz-score').textContent = '';
+  const subset = shuffle(PAIRS).slice(0, 10);
+  subset.forEach(p => {
+    const askA = Math.random() > 0.5;
+    const prompt = askA ? p.a : p.b;
+    const ans = askA ? p.b : p.a;
+    const div = document.createElement('div');
+    div.className = 'quiz-item';
+    div.innerHTML = `<span style="font-size:1.4rem">${p.emoji}</span> Opposite of <b>${prompt}</b>: <input type="text" class="quiz-input" data-ans="${ans.toLowerCase()}" placeholder="?">`;
+    list.appendChild(div);
+  });
+}
+function checkQuiz() {
+  let score = 0;
+  document.querySelectorAll('.quiz-input').forEach(inp => {
+    const val = inp.value.trim().toLowerCase();
+    const ans = inp.dataset.ans;
+    if(val === ans) { inp.classList.add('correct'); inp.classList.remove('wrong'); score++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  document.getElementById('quiz-score').textContent = `Score: ${score} / 10`;
+  showFeedback(score === 10 ? "Perfect! 🎉" : "Keep going! 💪", score >= 6);
+}
+
+// ================= 3. MATCHING =================
+let matchSelected = null;
+let matchCount = 0;
+let currentMatchTotal = 8;
+function initMatching() {
+  const leftCol = document.getElementById('match-left');
+  const rightCol = document.getElementById('match-right');
+  leftCol.innerHTML = ''; rightCol.innerHTML = '';
+  matchSelected = null; matchCount = 0;
+  currentMatchTotal = 8;
+  document.getElementById('match-status').textContent = "Select a word on the left, then its opposite on the right.";
+
+  const subset = shuffle(PAIRS).slice(0, currentMatchTotal);
+  const leftItems = shuffle(subset.map((p,i) => ({txt:p.a, idx:i})));
+  const rightItems = shuffle(subset.map((p,i) => ({txt:p.b, idx:i})));
+
+  leftItems.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'match-btn'; btn.textContent = item.txt; btn.dataset.idx = item.idx;
+    btn.onclick = () => selectMatch(btn, 'left');
+    leftCol.appendChild(btn);
+  });
+  rightItems.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'match-btn'; btn.textContent = item.txt; btn.dataset.idx = item.idx;
+    btn.onclick = () => selectMatch(btn, 'right');
+    rightCol.appendChild(btn);
+  });
+}
+function selectMatch(btn, side) {
+  if(btn.classList.contains('matched')) return;
+  if(side === 'left') {
+    document.querySelectorAll('#match-left .match-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    matchSelected = btn;
+  } else if(matchSelected) {
+    if(matchSelected.dataset.idx === btn.dataset.idx) {
+      matchSelected.classList.add('matched'); btn.classList.add('matched');
+      matchSelected.classList.remove('selected'); matchSelected = null;
+      matchCount++;
+      showFeedback("Match! ✔", true);
+      if(matchCount === currentMatchTotal) showFeedback("All Matched! 🏆", true);
+    } else {
+      btn.classList.add('shake'); matchSelected.classList.add('shake');
+      const tB = btn; const tS = matchSelected;
+      setTimeout(() => { tB.classList.remove('shake'); tS.classList.remove('shake','selected'); }, 400);
+      matchSelected = null;
+      showFeedback("Try Again ✘", false);
+    }
+  }
+}
+
+// ================= 4. SPEED SORT =================
+let sortScore = 0;
+let sortTimer = null;
+let currentSortItem = null;
+function initSpeedSort() {
+  sortScore = 0;
+  document.getElementById('sort-score').textContent = 0;
+  nextSortWord();
+}
+function nextSortWord() {
+  const isOpposite = Math.random() > 0.4;
+  if(isOpposite) {
+    const p = PAIRS[Math.floor(Math.random() * PAIRS.length)];
+    currentSortItem = { word: p.a, type: 'opposite', hint: p.b };
+  } else {
+    const s = SYNONYMS[Math.floor(Math.random() * SYNONYMS.length)];
+    currentSortItem = { word: s.word, type: 'synonym', hint: s.pair };
+  }
+  document.getElementById('sort-word').textContent = currentSortItem.word.toUpperCase();
+  const fill = document.getElementById('timer-fill');
+  fill.style.transition = 'none'; fill.style.width = '100%';
+  setTimeout(() => { fill.style.transition = 'width 3s linear'; fill.style.width = '0%'; }, 50);
+  clearTimeout(sortTimer);
+  sortTimer = setTimeout(() => { showFeedback("Too Slow! ⏰", false); nextSortWord(); }, 3000);
+}
+function handleSort(choice) {
+  clearTimeout(sortTimer);
+  const correct = choice === currentSortItem.type;
+  if(correct) {
+    sortScore += 10;
+    document.getElementById('sort-score').textContent = sortScore;
+    showFeedback(`Correct! (+10)`, true);
+  } else {
+    showFeedback(`Wrong! It was ${currentSortItem.type}`, false);
+  }
+  setTimeout(nextSortWord, 800);
+}
+
+// ================= 5. SENTENCE BUILDER =================
+function initSentences() {
+  const s = SENTENCES[Math.floor(Math.random() * SENTENCES.length)];
+  const display = document.getElementById('sentence-display');
+  const optsDiv = document.getElementById('sentence-options');
+  document.getElementById('sentence-feedback').textContent = '';
+
+  display.innerHTML = s.text.replace('___', `<span class="blank" id="target-blank">?</span>`);
+
+  const shuffledOpts = shuffle(s.options);
+  optsDiv.innerHTML = '';
+  shuffledOpts.forEach(opt => {
+    const chip = document.createElement('div');
+    chip.className = 'option-chip';
+    chip.textContent = opt.toUpperCase();
+    chip.onclick = () => {
+      const blank = document.getElementById('target-blank');
+      blank.textContent = opt.toUpperCase();
+      blank.style.borderBottomColor = opt === s.answer ? '#10b981' : '#ef4444';
+      blank.style.color = opt === s.answer ? '#10b981' : '#ef4444';
+      const fb = document.getElementById('sentence-feedback');
+      if(opt === s.answer) {
+        fb.textContent = "Excellent! ✅"; fb.style.color = "#10b981";
+        showFeedback("Great Job! 🌟", true);
+      } else {
+        fb.textContent = `Oops! The answer is "${s.answer}"`; fb.style.color = "#ef4444";
+        showFeedback("Not quite!", false);
+      }
+      document.querySelectorAll('.option-chip').forEach(c => c.classList.add('used'));
+    };
+    optsDiv.appendChild(chip);
+  });
+}
+</script>
+</body>
+</html>
